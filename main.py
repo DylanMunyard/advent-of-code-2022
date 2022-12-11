@@ -9,6 +9,7 @@ import day6
 import day7
 import day8
 import day9
+import day10
 
 if __name__ == '__main__':
     day = sys.argv[1] if len(sys.argv) >= 2 else '1'
@@ -31,6 +32,8 @@ if __name__ == '__main__':
             day8.solve()
         case '9':
             day9.solve()
+        case '10':
+            day10.solve()
         case _:
             print(f'day {day} not solved')
 
