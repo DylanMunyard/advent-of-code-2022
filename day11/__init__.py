@@ -6,7 +6,6 @@ class Monkey:
     r_monkey_boy = re.compile(r'Monkey (\d+)')
     index = 0
     items = []
-    stress = []
     operand_a = ""
     operator = ""
     operand_b = ""
@@ -21,17 +20,20 @@ class Monkey:
             self.index = int(monkey_boy[0])
 
     def think(self, worry):
+        # part 1:
+        # relief = 3
+        # part 2:
+        relief = 1
         self.inspections = self.inspections + 1
-        # print(f'\tMonkey {self.index} inspects an item with a worry level of {worry}')
+        print(f'\tMonkey {self.index} inspects an item with a worry level of {worry}')
         my_worry = self.operate(worry)
-        # part 1 uncomment:
-        # my_worry = int(my_worry / 3)
-        # print(f'\t\tMonkey gets bored with item. Worry level is divided by 3 to {my_worry}.')
+        my_worry = int(my_worry / relief)
+        print(f'\t\tMonkey gets bored with item. Worry level is divided by {relief} to {my_worry}.')
         if my_worry % self.divisor == 0:
-            # print(f'\t\tCurrent worry level is divisible by {self.divisor}.')
+            print(f'\t\tCurrent worry level is divisible by {self.divisor}.')
             return True, my_worry
         else:
-            # print(f'\t\tCurrent worry level is not divisible by {self.divisor}.')
+            print(f'\t\tCurrent worry level is not divisible by {self.divisor}.')
             return False, my_worry
 
     def operate(self, worry):
@@ -42,21 +44,18 @@ class Monkey:
 
         match self.operator:
             case "*":
-                # print(f'\t\tWorry level is multiplied by {stress} to {worry * stress}.')
+                print(f'\t\tWorry level is multiplied by {stress} to {worry * stress}.')
                 return worry * stress
             case "+":
-                # print(f'\t\tWorry level increases by {stress} to {worry + stress}.')
+                print(f'\t\tWorry level increases by {stress} to {worry + stress}.')
                 return worry + stress
-            case "/":
-                return worry / stress
-            case "-":
-                return worry - stress
 
 
 def solve():
     r_operation = re.compile(r'new = (.+) ([\*/\+-]) (.*)')
     r_test = re.compile(r'divisible by (\d+)')
-    with open('day11/sample.txt', 'r') as file:
+    with open('day11/input.txt', 'r') as file:
+        # parse input
         monkeys = [Monkey(file.readline().strip())]
         for line in file:
             line = line.strip()
@@ -64,7 +63,6 @@ def solve():
                 monkeys.append(Monkey(line))
             elif line.startswith("Starting items:"):
                 monkeys[-1].items = [int(item) for item in line.replace("Starting items:", "").strip().split(",")]
-                monkeys[-1].stress = []
             elif line.startswith("Operation:"):
                 operation = r_operation.findall(line)
                 monkeys[-1].operand_a = operation[0][0]
@@ -78,26 +76,26 @@ def solve():
             elif line.startswith("If false: throw to monkey"):
                 monkeys[-1].monkey_if_false = int(line.replace("If false: throw to monkey", "").strip())
 
+        # todo understand the maths behind this
+        multiple = functools.reduce(lambda m1, m2: m1 * m2.divisor, monkeys, 1)
+
         for index in range(0, 10000):
             for cheeky_boi in monkeys:
-                # print(f'\nMonkey {cheeky_boi.index}:')
+                print(f'\nMonkey {cheeky_boi.index}:')
                 for item in cheeky_boi.items:
                     test, worry = cheeky_boi.think(item)
                     if test:
-                        # print(f'\t\tItem with worry level {worry} is thrown to monkey {cheeky_boi.monkey_if_true}.')
-                        monkeys[cheeky_boi.monkey_if_true].stress.append(worry)
-                        monkeys[cheeky_boi.monkey_if_true].items.append(worry)
+                        print(f'\t\tItem with worry level {worry} ({worry}) is thrown to monkey {cheeky_boi.monkey_if_true}.')
+                        monkeys[cheeky_boi.monkey_if_true].items.append(worry % multiple)
                     else:
-                        # print(f'\t\tItem with worry level {worry} is thrown to monkey {cheeky_boi.monkey_if_false}.')
-                        monkeys[cheeky_boi.monkey_if_false].stress.append(worry)
-                        monkeys[cheeky_boi.monkey_if_false].items.append(worry)
+                        print(f'\t\tItem with worry level {worry} ({worry}) is thrown to monkey {cheeky_boi.monkey_if_false}.')
+                        monkeys[cheeky_boi.monkey_if_false].items.append(worry % multiple)
 
                 cheeky_boi.items.clear()
-                cheeky_boi.stress.clear()
 
             match index:
                 case 0 | 19 | 999 | 1999 | 2999 | 3999 | 4999 | 5999 | 6999 | 7999 | 8999 | 9999:
-                    print(f'== After round {index}')
+                    print(f'== After round {index + 1}')
                     for cheeky_boi in monkeys:
                         print(f'Monkey {cheeky_boi.index} inspected items {cheeky_boi.inspections} times')
 
@@ -108,4 +106,3 @@ def solve():
         most_inspections = list(reversed(sorted(inspections)))[:2]
         print(most_inspections)
         print(functools.reduce(lambda i1, i2: i1 * i2, most_inspections))
-
