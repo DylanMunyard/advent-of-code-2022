@@ -23,7 +23,6 @@ def instruction(move):
 
 def solve():
     with open('day5/sample.txt', 'r') as file:
-        stacks = {}
         crate_input = list()
         moves = list()
         is_crane_instruction = False
