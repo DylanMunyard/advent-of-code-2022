@@ -24,8 +24,8 @@ re_coordinates = re.compile(r'x=(-?\d+), y=(-?\d+)')
 def detection_ranges(y, sensors):
     """
     For the given row, calculate the ranges (x1 to x2) of detected beacons
-    :param y:
-    :param sensors:
+    :param y: the row to calculate
+    :param sensors: all the sensors
     :return: An array of tuples. Each tuple is the x1 to x2 range of detections.
     """
     # given a row, find the range (as a tuple) of each sensor's detections
@@ -90,6 +90,7 @@ def solve():
     # part 2
     i = 0
     while True:
+        # the row with two ranges has a gap of 1 between them, I hope
         detections = detection_ranges(i, sensors)
         if len(detections) == 2:
             x = detections[0][1] + 1
